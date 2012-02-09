@@ -1,78 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html>
-<head>
-    <meta name="description" content="Groovy Collection API Trygve Amundsen, Kodemaker basics groovy collections assert &quot;string&quot;.collect { it } == ['s','t','r','i','n','g']  // string Java Collection (List, Map, Set mfl.) Array String Regexp Iterable CharSequence Object!    assert 42.collect { it } == [42] notation, lists def emptyList = []  assert [] instanceof ArrayList  def list = [1,2,3] assert list[1..-1] == [2,3] assert list[-3..-2] == [1,2]  assert list[2..1] == [3,2]  notation, maps def emptyMap = [:] assert [:] instanceof LinkedHashMap // predictable order   assert [a:1, b:2] == ['a':1, 'b':2]  method(a:1, b:2)       // illusion of named parameters  ranges are lists assert (1..3) == [1,2,3] assert (1..&lt;3) == [1,2]  assert (1..3) instanceof IntRange // groovy.lang assert (1..3) instanceof List  notation, list operators assert [1,2] &lt;&lt; 3 == [1,2,3]    // leftShift() assert [1,2]+3 == [1,2,3]       // plus() assert [1,2]+[3,4] == [1,2,3,4] assert [1,2,3]-[3,4] == [1,2]   // minus()  notation, spread operator assert [&quot;a&quot;,&quot;b&quot;,&quot;1&quot;]*.isNumber() == [false,false,true] assert [&quot;a&quot;,&quot;b&quot;,&quot;1&quot;].number == [false,false,true]  basics, api each [1,2,3].each { println it} [1,2,3].each { item -&gt; println item } [1,2,3].eachWithIndex { item, i -&gt; println &quot;index ${i} contains ${item}&quot; } [1,2,3].reverseEach { println it } find (filters) assert [1,2,3].findAll { it % 2 } == [1,3] assert [1,2,3].find { it % 2 } == 1 assert [1,2,3].findIndexValues { it %2 } == [0,2] collect (map) assert [1,2,3].collect { it * it } == [1,4,9] assert [1,[2,3],4].collectNested { it*it } == [1,[4,9],16]  assert [1,2,3].collectEntries { ['k' +it, it] } == [k1:1,k2:2,k3:3]  changed    unchanged changed unchanged number of items item content each eachWithIndex reverseEach findAll grep unique tail drop/take   collect collectEntries collectNested Object  boolean max, min, sum, count join inject any every method returns countBy findResults collectMany split Collection  one item multiple items find head first/last   sort groupBy stack push/pop    set plus minus intersect subsequences permutations combinations reducers assert [1,2,3].max() == 3 assert [1,2,3].min() == 1 assert [1,2,3].sum() == 6  assert [1,2,3].max{ -it } == 1 assert [1,2,3].max{ a,b-&gt; b&lt;=&gt;a } == 1  reducers, cont’d assert [1,2,3].any{ it &gt; 3 } == false assert [1,2,3].every{ it &lt; 4 } == true  assert [1,2,3].join(&quot;;&quot;) == &quot;1;2;3&quot; reducers, inject assert [1,2,3].inject(0)   { acc, val -&gt; acc+val } == 6 assert [1,2,3].inject(&quot;0&quot;) { acc, val -&gt; acc+val } == &quot;0123&quot; assert [1,2,3].inject([])  { acc, val -&gt; acc+val } == [1,2,3]  assert [a:1,b:2].inject(0) { acc, key, val -&gt; acc+val } == 3  inject -&gt; reduce Object.metaClass.reduce = {initial, closure-&gt;      delegate.inject(initial, closure)  }  [1,2,3].reduce(0){acc,val-&gt;acc+val}  useful methods groupBy, countBy assert [1,2,3].groupBy{it &lt; 2 ? 'small' : 'big'} == [small:[1], big:[2,3]] assert [1,2,3].countBy{it &lt; 2 ? 'small' : 'big'} == [small:1,   big:2]  set operations assert [1,2]+3 == [1,2,3] assert [1,2]+[3,4] == [1,2,3,4] assert [1,2].plus([3,4]) == [1,2,3,4]  assert [1,2,3]-3 == [1,2] assert [1,2,3]-[2,3] == [1] assert [1,2,3].minus([2,3]) == [1]  assert [1,2,3].intersect([3,4]) == [3] assert [1,2,3].disjoint([4,5]) == true  assert [1,2,3].subsequences() == [[3], [1, 2, 3], [1], [2], [2, 3], [1, 3], [1, 2]] as Set assert [1,2,3].permutations() == [[1, 2, 3], [2, 3, 1], [3, 2, 1], [3, 1, 2], [2, 1, 3], [1, 3, 2]] as Set assert [[1,2],[3,4]].combinations() == [[1, 3], [2, 3], [1, 4], [2, 4]]  Nested Collections assert [1,[2,3],4].flatten() == [1,2,3,4]  assert [1,[2,3],4].collectNested { it+10 } == [11,[12,13],14]  assert [['a','b'], [1,2]].transpose() == [['a',1],['b',2]] functional style assert [1,2,3].head() == 1 assert [1,2,3].tail() == [2,3]  assert [1,2,3].first() == 1 assert [1,2,3].last() == 3  assert [1,2,3].take(2) == [1,2] assert [1,2,3].drop(2) == [3]  assert [1,2,3].split { it&lt;3 } == [[1,2],[3]]  list as stackNOTE: mutates! def list = [1,2,3] list.push(4) assert list == [1,2,3,4] assert list.pop() == 4 assert list == [1,2,3]  grep assert [1,2,3].grep {it &lt; 3} == [1,2] // behaves like findAll  assert [1,2,'a','b'].grep(Integer) == [1,2]  assert [1,2,'a','b'].grep(~/\d/) == [1,2]  findResults [1,2,3].findAll { it &gt; 1 }        .collect { it*it } [1,2,3].findResults { it &gt; 1 ? it*it : null } is identical to assert [1,2,3].findResults { it &gt; 1 ? it*it : null } == [4,9] Other, possibly useful methods assert [1,2,3].collectMany { [it**2, it**3] } == [1,1,4,8,9,27]  map withDefault def newMap = [:].withDefault { [] } [a:1,b:2,c:2].each { key, val -&gt;     newMap[val] &lt;&lt; key } assert newMap == [1:['a'], 2:['b','c']]  mutability all methods return new collections/objects a few exceptions exist, such as push/pop and sort(boolean mutate) objects and collections are generally mutable use asImmutable(), asSynchronized() for multithreading or better: use gpars (included in groovy jdk) (that’s a different talk - coming up on groovy meetup!) doc &amp; src Groovy JDK doc Groovy JDK doc DefaultGroovyMethods real-world example params.findAll { key, val -&gt;        // filtrer kun diagnose-parametre     key.startsWith(paramPrefix+&quot;diagnoser&quot;) }.groupBy { key, val -&gt;             // grupper på rader     key.substring(0,&quot;diagnoser[0]&quot;.size()) }.findAll { rowKey, rowMap -&gt;       // Fjern tomme rader     rowMap.any { key, val -&gt; val &amp;&amp; val != &quot;null&quot; } }.inject([:]) { acc, key, val -&gt;    // ungroup rader (tilbake til en map med parametre)     acc + val }.collectEntries { key, val -&gt;      // hent sykdomskode.id     if (key.endsWith('.sykdomskode') &amp;&amp; val) {         [key+'.id', Sykdomskode.findByNr(val)?.id ?: &quot;&quot;]     } else {         [key, val]     } }.sort {     it.key } more... groovy.codehaus.org  meetup.com/Oslo-Groovy-Meetup  questions ? Unused sample data @EqualsAndHashCode @ToString class Person { def name, address, pets } @EqualsAndHashCode @ToString class Address { def street, city } enum Pet { CAT, DOG, BIRD, DUCK } import static Pet.* def persons = [     new Person(name:&quot;Ole&quot;,                address:new Address(street:&quot;Blindvn 1&quot;, city:&quot;Oslo&quot;),                pets:[BIRD, CAT]),     new Person(name:&quot;Dole&quot;,                address:new Address(street:&quot;Blindvn 2&quot;, city:&quot;Oslo&quot;),                pets:[DOG, CAT]),     new Person(name:&quot;Doff&quot;,                address:new Address(street:&quot;Strandvn 9&quot;, city:&quot;Bergen&quot;),                pets:[BIRD, DOG]),     ] assert persons.pets == [ [BIRD, CAT], [DOG, CAT], [BIRD, DOG]]  assert persons.pets.flatten().unique() == [BIRD, CAT, DOG] assert persons.address.city.unique() == [&quot;Oslo&quot;, &quot;Bergen&quot;] real-world example import org.ccil.cowan.tagsoup.Parser @Grab(group='org.ccil.cowan.tagsoup', module='tagsoup', version='0.9.7')  def gdocHome = &quot;http://groovy.codehaus.org/groovy-jdk/&quot; def gdocs = [&quot;java/lang&quot;: [&quot;Object[]&quot;,&quot;Object&quot;],              &quot;java/util&quot;: [&quot;Collection&quot;, &quot;List&quot;, &quot;Map&quot;]]  gdocs.inject([:]) { agg, key, val -&gt;       // create map of [class:url]     agg + val.collectEntries { [it, gdocHome + key+&quot;/&quot;+it+&quot;.html&quot; ] } }.collectEntries { className, url -&gt;       // parse urls     def html = new XmlParser(new Parser()).parse(url)     [className, html.body.table[1].tr[1..-1].collect {         it.td[1].code.b.a.text()     }] }  gå dypt i utvalgte kall, ex groupBy inject findResult: find + transform nested collections: collectNested Groovy Collection Jdk Doc ObjectObject[]CollectionMapListSet Basic collection types assert [] instanceof ArrayList        // (java.util) assert [:] instanceof LinkedHashMap   // predictable order  assert ([] as Set) instanceof HashSet assert (1..3) instanceof IntRange     // groovy.lang assert (1..3) instanceof List  "/>
-    <title></title>
-    <script type="text/javascript" language="javascript">
-//      <![CDATA[
-            var images = new Array (41);
-            images[0] = "Groovy%20Collection%20Api.html_files/Groovy%20Collection%20Api.001.png";
-            images[1] = "Groovy%20Collection%20Api.html_files/Groovy%20Collection%20Api.002.png";
-            images[2] = "Groovy%20Collection%20Api.html_files/Groovy%20Collection%20Api.003.png";
-            images[3] = "Groovy%20Collection%20Api.html_files/Groovy%20Collection%20Api.004.png";
-            images[4] = "Groovy%20Collection%20Api.html_files/Groovy%20Collection%20Api.005.png";
-            images[5] = "Groovy%20Collection%20Api.html_files/Groovy%20Collection%20Api.006.png";
-            images[6] = "Groovy%20Collection%20Api.html_files/Groovy%20Collection%20Api.007.png";
-            images[7] = "Groovy%20Collection%20Api.html_files/Groovy%20Collection%20Api.008.png";
-            images[8] = "Groovy%20Collection%20Api.html_files/Groovy%20Collection%20Api.009.png";
-            images[9] = "Groovy%20Collection%20Api.html_files/Groovy%20Collection%20Api.010.png";
-            images[10] = "Groovy%20Collection%20Api.html_files/Groovy%20Collection%20Api.011.png";
-            images[11] = "Groovy%20Collection%20Api.html_files/Groovy%20Collection%20Api.012.png";
-            images[12] = "Groovy%20Collection%20Api.html_files/Groovy%20Collection%20Api.013.png";
-            images[13] = "Groovy%20Collection%20Api.html_files/Groovy%20Collection%20Api.014.png";
-            images[14] = "Groovy%20Collection%20Api.html_files/Groovy%20Collection%20Api.015.png";
-            images[15] = "Groovy%20Collection%20Api.html_files/Groovy%20Collection%20Api.016.png";
-            images[16] = "Groovy%20Collection%20Api.html_files/Groovy%20Collection%20Api.017.png";
-            images[17] = "Groovy%20Collection%20Api.html_files/Groovy%20Collection%20Api.018.png";
-            images[18] = "Groovy%20Collection%20Api.html_files/Groovy%20Collection%20Api.019.png";
-            images[19] = "Groovy%20Collection%20Api.html_files/Groovy%20Collection%20Api.020.png";
-            images[20] = "Groovy%20Collection%20Api.html_files/Groovy%20Collection%20Api.021.png";
-            images[21] = "Groovy%20Collection%20Api.html_files/Groovy%20Collection%20Api.022.png";
-            images[22] = "Groovy%20Collection%20Api.html_files/Groovy%20Collection%20Api.023.png";
-            images[23] = "Groovy%20Collection%20Api.html_files/Groovy%20Collection%20Api.024.png";
-            images[24] = "Groovy%20Collection%20Api.html_files/Groovy%20Collection%20Api.025.png";
-            images[25] = "Groovy%20Collection%20Api.html_files/Groovy%20Collection%20Api.026.png";
-            images[26] = "Groovy%20Collection%20Api.html_files/Groovy%20Collection%20Api.027.png";
-            images[27] = "Groovy%20Collection%20Api.html_files/Groovy%20Collection%20Api.028.png";
-            images[28] = "Groovy%20Collection%20Api.html_files/Groovy%20Collection%20Api.029.png";
-            images[29] = "Groovy%20Collection%20Api.html_files/Groovy%20Collection%20Api.030.png";
-            images[30] = "Groovy%20Collection%20Api.html_files/Groovy%20Collection%20Api.031.png";
-            images[31] = "Groovy%20Collection%20Api.html_files/Groovy%20Collection%20Api.032.png";
-            images[32] = "Groovy%20Collection%20Api.html_files/Groovy%20Collection%20Api.033.png";
-            images[33] = "Groovy%20Collection%20Api.html_files/Groovy%20Collection%20Api.034.png";
-            images[34] = "Groovy%20Collection%20Api.html_files/Groovy%20Collection%20Api.035.png";
-            images[35] = "Groovy%20Collection%20Api.html_files/Groovy%20Collection%20Api.036.png";
-            images[36] = "Groovy%20Collection%20Api.html_files/Groovy%20Collection%20Api.037.png";
-            images[37] = "Groovy%20Collection%20Api.html_files/Groovy%20Collection%20Api.038.png";
-            images[38] = "Groovy%20Collection%20Api.html_files/Groovy%20Collection%20Api.039.png";
-            images[39] = "Groovy%20Collection%20Api.html_files/Groovy%20Collection%20Api.040.png";
-            images[40] = "Groovy%20Collection%20Api.html_files/Groovy%20Collection%20Api.041.png";
-            var index = 0;
-            function WindowLoaded(evt)
-            {
-                document.body.onselectstart = function () { return false; };
-            }
-            function Step(i)
-            {
-                GoTo(index + i)
-            }
-            function GoTo(newIndex)
-            {
-                if(newIndex >= 0 && newIndex < images.length)
-                {
-                    index = newIndex;
-                    document.Slideshow.src = images[index];
-                }
-            }
-//      ]]>
-    </script>
-</head>
-<body bgcolor="black" onload='WindowLoaded(event);'>
-    <p align="center">
-        <br/>
-        <br/>
-        <img name="Slideshow" alt="" src="Groovy%20Collection%20Api.html_files/Groovy%20Collection%20Api.001.png" onclick="Step(1)"/>
-    </p>
-</body>
-</html>
